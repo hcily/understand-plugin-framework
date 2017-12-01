@@ -1,11 +1,17 @@
 package com.weishu.upf.hook_classloader.ams_hook;
 
+import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import android.os.Handler;
+import android.util.ArrayMap;
+
+import dalvik.system.DexFile;
 
 /**
  * @author weishu
@@ -30,7 +36,7 @@ public class AMSHookHelper {
      */
     public static void hookActivityManagerNative() throws ClassNotFoundException,
             NoSuchMethodException, InvocationTargetException,
-            IllegalAccessException, NoSuchFieldException {
+            IllegalAccessException, NoSuchFieldException, InstantiationException {
 
         //        17package android.util;
         //        18
@@ -75,8 +81,33 @@ public class AMSHookHelper {
         // 创建一个这个对象的代理对象, 然后替换这个字段, 让我们的代理对象帮忙干活
         Class<?> iActivityManagerInterface = Class.forName("android.app.IActivityManager");
         Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                new Class<?>[] { iActivityManagerInterface }, new IActivityManagerHandler(rawIActivityManager));
+                new Class<?>[]{iActivityManagerInterface}, new IActivityManagerHandler(rawIActivityManager));
         mInstanceField.set(gDefault, proxy);
+
+
+//        Class<?> activityManagerServiceClass = Class.forName("com.android.server.am.ActivityManagerService");
+//        Method getRecordForAppLockedMethod = activityManagerServiceClass.getDeclaredMethod("getRecordForAppLocked");
+//        getRecordForAppLockedMethod.setAccessible(true);
+//
+//        Object processRecord = getRecordForAppLockedMethod.invoke(rawIActivityManager);
+//
+//        // 获取 ArrayMap<String, ProcessStats.ProcessStateHolder> pkgList
+//        Field dexElementArray = processRecord.getClass().getDeclaredField("pkgList");
+//        dexElementArray.setAccessible(true);
+//        ArrayMap<String, Object> pkgList = (ArrayMap<String, Object>) dexElementArray.get(processRecord);
+//
+//
+//        Class<?> processStats$ProcessStateHolder = Class.forName("com.android.internal.app.ProcessStats$ProcessStateHolder");
+//
+//        // 构造插件Element(File file, boolean isDirectory, File zip, DexFile dexFile) 这个构造函数
+//        Constructor<?> constructor = processStats$ProcessStateHolder.getConstructor(int.class);
+//        Object o = constructor.newInstance(1);
+//
+//        pkgList.put("com.weishu.upf.dynamic_proxy_hook.app2", o);
+
+
+
+
 
     }
 

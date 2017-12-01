@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "插件插件!收到请回答!!", Toast.LENGTH_SHORT).show();
-                sendBroadcast(new Intent("com.weishu.upf.demo.app2.Receiver1"));
+                sendBroadcast(new Intent("com.weishu.upf.demo.app2.Receiver2"));
             }
         });
 

@@ -36,13 +36,13 @@ public class BinderProxyHookHandler implements InvocationHandler {
 
     Class<?> stub;
 
-    Class<?> iinterface;
+    Class<?> iInterface;
 
     public BinderProxyHookHandler(IBinder base) {
         this.base = base;
         try {
             this.stub = Class.forName("android.content.IClipboard$Stub");
-            this.iinterface = Class.forName("android.content.IClipboard");
+            this.iInterface = Class.forName("android.content.IClipboard");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -72,7 +72,7 @@ public class BinderProxyHookHandler implements InvocationHandler {
                     // 检测有两个要求, 其一: 非空, 其二, IXXInterface类型。
                     // 所以, 其实返回的对象不需要是Binder对象, 我们把它当作普通的对象Hook掉就ok(拦截这个对象里面对于IXXInterface相关方法的调用)
                     // tks  jeremyhe_cn@qq.com
-                    new Class[] { this.iinterface },
+                    new Class[] { this.iInterface},
                     new BinderHookHandler(base, stub));
         }
 

@@ -8,7 +8,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.util.Log;
 
 import com.weishu.upf.hook_classloader.Utils;
 
@@ -20,7 +22,7 @@ public class LoadedApkClassLoaderHookHelper {
 
     public static Map<String, Object> sLoadedApk = new HashMap<String, Object>();
 
-    public static void hookLoadedApkInActivityThread(File apkFile) throws ClassNotFoundException,
+    public static void hookLoadedApkInActivityThread(Context context,File apkFile) throws ClassNotFoundException,
             NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InstantiationException {
 
         // 先获取到当前的ActivityThread对象
@@ -58,6 +60,19 @@ public class LoadedApkClassLoaderHookHelper {
 
         WeakReference weakReference = new WeakReference(loadedApk);
         mPackages.put(applicationInfo.packageName, weakReference);
+
+
+        String className = applicationInfo.packageName + ".ContextHolder";
+        try
+        {
+            Method m = classLoader.loadClass(className)
+                    .getMethod("setContext", Context.class);
+            m.invoke(null, context);
+        }
+        catch (Exception e)
+        {
+            Log.w("===>>>", "Fail to loadClass " + className + ", skip it", e);
+        }
     }
 
     /**

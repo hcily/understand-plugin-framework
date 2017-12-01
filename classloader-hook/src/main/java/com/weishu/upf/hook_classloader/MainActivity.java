@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 try {
                     Intent t = new Intent();
-                    if (HOOK_METHOD == PATCH_BASE_CLASS_LOADER) {
+                    if (HOOK_METHOD != PATCH_BASE_CLASS_LOADER) {
                         t.setComponent(new ComponentName("com.weishu.upf.dynamic_proxy_hook.app2",
                                 "com.weishu.upf.dynamic_proxy_hook.app2.MainActivity"));
                     } else {
@@ -56,14 +56,18 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+
+        int myProcessID = android.os.Process.myPid();
+        System.out.println("====>>>1"+myProcessID);
     }
 
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
         try {
-            Utils.extractAssets(newBase, "dynamic-proxy-hook.apk");
-            Utils.extractAssets(newBase, "ams-pms-hook.apk");
+            Utils.extractAssets(newBase, "dynamic-proxy-hook-debug.apk");
+            Utils.extractAssets(newBase, "ams-pms-hook-debug.apk");
             Utils.extractAssets(newBase, "test.apk");
 
             if (HOOK_METHOD == PATCH_BASE_CLASS_LOADER) {
@@ -71,7 +75,7 @@ public class MainActivity extends Activity {
                 File optDexFile = getFileStreamPath("test.dex");
                 BaseDexClassLoaderHookHelper.patchClassLoader(getClassLoader(), dexFile, optDexFile);
             } else {
-                LoadedApkClassLoaderHookHelper.hookLoadedApkInActivityThread(getFileStreamPath("ams-pms-hook.apk"));
+                LoadedApkClassLoaderHookHelper.hookLoadedApkInActivityThread(this,getFileStreamPath("dynamic-proxy-hook-debug.apk"));
             }
 
             AMSHookHelper.hookActivityManagerNative();
